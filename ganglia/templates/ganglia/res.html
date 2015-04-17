@@ -1,0 +1,177 @@
+{% extends "ganglia/base.html" %}
+
+{% block content %}
+{% load staticfiles %}
+<div id="wrapper">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="">Monitor Admin Dashboard</a>                
+        </div>
+        <!-- /.navbar-header -->
+
+        <ul class="nav navbar-top-links navbar-right">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>                   
+                <!-- /.dropdown-messages -->
+            </li>
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-tasks fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>                    
+                <!-- /.dropdown-tasks -->
+            </li>
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>                    
+                <!-- /.dropdown-alerts -->
+            </li>
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                    </li>
+                    <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-user -->
+            </li>
+            <!-- /.dropdown -->
+        </ul>
+        <!-- /.navbar-top-links -->
+
+        <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">                        
+                    <li>
+                        <div align=center class="sm-container">
+                        	<img src="{% static 'ganglia/images/pc.png' %}" height="150" width="150"></img>
+                        	<h4>{{ res.res_hostname }}</h4>                            
+                        </div>
+                    </li>                                                
+                    <li>
+                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> mtc<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            {% if mtc_list %}
+                            	{% for mtc in mtc_list %}
+                            		<li>
+                                		<a href="#">{{ mtc.metric_name }}</a>
+                            		</li>
+                            	{% endfor %}
+                            {% else %}
+                            	<li>
+                                    <a href="#">no mtc yet...</a>
+                                </li>	
+                            {% endif %}                                
+                        </ul>                            
+                    </li>                                                
+                    </ul>                    
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">{{ res.res_name }} Detail</h1>
+                </div>
+            </div>
+            <!-- /.row -->            
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-8">
+        	<div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> <span id="on_show_metric">{{res.res_name}} last_hour </span>
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                Time
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li><a href="#" onclick="show_metric('cpu')">last_hour</a>
+                                </li>
+                                <li><a href="#" onclick="show_metric('mem')">last day</a>
+                                </li>
+                                <li><a href="#" onclick="show_metric('network')">last week</a>
+                                </li>
+                                <li><a href="#" onclick="show_metric('load')">last month</a>
+                                </li>                                                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-heading -->
+                <div id="metric-graph">                    
+                    <div class="lg-container" style="display:block">
+                        <div class="demo-placeholder" id="mtc-chart"></div>
+                    </div>                    
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-6 -->
+
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-warning fa-fw"></i> <span id="on_show_metric">Alert</span>                    
+                </div>
+                <!-- /.panel-heading -->        
+                <div id="metric-graph">                    
+                    <div class="lg-container" style="display:block">
+                        <div class="demo-placeholder">                            
+                        </div>
+                    </div>                    
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        
+        <!-- /.col-lg-4 -->
+    </div>
+    <!-- /.row -->
+    
+</div>
+<!-- /#page-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+{% load staticfiles %}    
+<script src="{% static 'ganglia/dist/js/res_data.js' %}"></script>
+
+<script type="text/javascript">     
+
+var mtc_name = get_mtc_list();
+var hostname = '{{ res.res_hostname }}';
+
+function get_mtc_list(){
+    var m_list = [];    
+    {% for mtc in mtc_list %}
+        m_list.push('{{ mtc.metric_name }}');              
+    {% endfor %}
+    return m_list;
+}    
+</script>
+
+{% endblock %}

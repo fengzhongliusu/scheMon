@@ -1,0 +1,70 @@
+{% extends "ganglia/base.html" %}
+{% block title%}
+<div class="row" style="background-color:#2e2e2e;padding:15px;color:#a6a6a6">
+	<div class="col-md-6 col-md-offset-3">
+		<div> 
+			<h1 align=center>
+				Monitored Hosts
+				<small>resources list</small>
+			</h1>
+		</div>
+	</div>
+	<div class="col-md-1 col-md-offset-1" style="padding-top:20px">
+		<a href="#" style="font-size:20px;color:#a6a6a0">About</a>
+	</div>
+</div>
+<br/><br/>
+{% endblock %}
+
+{% block content %}
+{% load staticfiles %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-4 col-md-offset-4">
+			{% if host_list and resource_list %}
+			{% for host in host_list %}
+			<div class="alert alert-info">
+				<h4 align="center">
+					{% load ganglia_tag %}
+					<a data-toggle="collapse" href="#{{ host.host_name|repl:"." }}" aria-expanded="false" aria-controls="{{ host.host_name|repl:"." }}">{{ host.host_name}}</a>
+				</h4>
+			</div>
+			<ul id="{{ host.host_name|repl:"." }}" class="collapse list-group">
+				{% for resource in resource_list %}
+				{% if resource.res_hostname == host.host_name%}
+				<li class="list-group-item">
+				<a href="{% url 'ganglia:detail' resource.id %}">{{resource.res_name}}</a>
+				</li>
+				{% endif %}
+				{% endfor %}
+			</ul>
+			{% endfor %}
+			{% else %}
+			<p>No resource are available</p>
+			{% endif %}
+		</div>
+	</div>
+	<!--div class="footer navbar-fixed-bottom" align=center style="background-color:#2e2e2e;padding:25px"-->
+	<div class="footer" align=center style="padding-top:65px">
+		Ontology-Monitoring--Copyright cshuo; 2015-3-1
+	</div>
+</div>
+
+<script type="text/javascript">
+function get_data(){
+	var texthttp;
+	texthttp = new XMLHttpRequest();
+	texthttp.onreadystatechange=function(){                
+		if(texthttp.readyState==4 && texthttp.status==200){
+			document.getElementById("myDiv").innerHTML = texthttp.responseText;
+		}
+		else{
+			document.getElementById("myDiv").innerHTML = "failed to get msg!!";
+		}
+	}
+	texthttp.open("GET","http://localhost:8000/ganglia/xml/localhost/cpu_idle/4/",true);
+	texthttp.send();
+}
+</script>
+{% endblock %}
+

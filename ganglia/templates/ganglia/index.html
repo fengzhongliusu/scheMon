@@ -1,0 +1,320 @@
+{% extends "ganglia/base.html" %}
+
+{% block content %}
+<div id="wrapper">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="">Monitor Admin Dashboard</a>                
+        </div>
+        <!-- /.navbar-header -->
+
+        <ul class="nav navbar-top-links navbar-right">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>                   
+                <!-- /.dropdown-messages -->
+            </li>
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-tasks fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>                    
+                <!-- /.dropdown-tasks -->
+            </li>
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>                    
+                <!-- /.dropdown-alerts -->
+            </li>
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                    </li>
+                    <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-user -->
+            </li>
+            <!-- /.dropdown -->
+        </ul>
+        <!-- /.navbar-top-links -->
+
+        <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">                        
+                    <li>
+                        <div class="sm-container">
+                            <div class="demo-placeholder" id="graph-holder"></div>
+                        </div>
+                    </li>
+                        <!-- <li>
+                            <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        </li> -->
+                        <!-- <host list> -->
+                        <li>
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Hosts<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                {% if host_list %}
+                                    {% for host in host_list %}
+                                        <li>
+                                            <a href="{% url 'ganglia:host_info' host.id %}">{{ host.host_name }}</a>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li>
+                                        <a href="#">no host yet...</a>
+                                    </li>
+                                {% endif %}                                                              
+                            </ul>
+                        </li>
+                        <!-- <host list> -->
+                        <li>
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Resources<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="#">Cpu</a>
+                                </li>
+                                <li>
+                                    <a href="#">Mem</a>
+                                </li>
+                                <li>
+                                    <a href="#">Disk</a>
+                                </li>
+                                <li>
+                                    <a href="#">Load</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>                        
+                        <li>
+                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Schedule<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="{% url 'ganglia:res_sche' %}">schedule page</a>
+                                </li>                                
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>                        
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Cluster Overview</h1>
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-3 col-xs-6">
+                  <!-- small box -->
+                  <div class="small-box bg-aqua">
+                    <div class="inner">
+                      <h3 id="cpu_util">0</h3>
+                      <h4>Cluster CPU ultilization</h4>
+                  </div>
+                  <div class="icon">
+                      <i class="ion ion-pie-graph"></i>
+                  </div>
+                  <a href="#" class="small-box-footer">cpu <!-- <i class="fa fa-arrow-circle-right"></i> --></a>
+              </div>
+          </div><!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-yellow">
+                <div class="inner">
+                  <h3 id="mem_util">0</h3>
+                  <h4>Cluster Mem ultilization</h4>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="#" class="small-box-footer">mem</a>
+              </div>
+            </div><!-- ./col -->   
+            <div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-red">
+                <div class="inner">
+                  <h3 id="disk_util">0</h3>
+                  <h4>Cluster Disk ultilization</h4>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-pie-graph"></i>
+                </div>
+                <a href="#" class="small-box-footer">disk</a>
+              </div>
+            </div><!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-green">
+                <div class="inner">
+                  <h3 id="load_one">0</h3>
+                  <h4>Cluster Load One</h4>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-cube"></i>
+                </div>
+                <a href="#" class="small-box-footer">load_one</a>
+              </div>
+            </div><!-- ./col -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> <span id="on_show_metric">cluster cpu last_hour </span>
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                Metrics
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li><a href="#" onclick="show_metric('cpu')">cluster Cpu last_hour</a>
+                                </li>
+                                <li><a href="#" onclick="show_metric('mem')">cluster Mem last_hour</a>
+                                </li>
+                                <li><a href="#" onclick="show_metric('network')">cluster network last_hour</a>
+                                </li>
+                                <li><a href="#" onclick="show_metric('load')">cluster Load last_hour</a>
+                                </li>                                                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-heading -->
+                <div id="metric-graph">                    
+                    <div class="lg-container" style="display:block">
+                        <div class="demo-placeholder" id="area-chart"></div>
+                    </div>                    	            
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->            
+            <!-- /.panel -->                    
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-8 -->
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bell fa-fw"></i> Alert Log
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-comment fa-fw"></i> Log_1
+                            <span class="pull-right text-muted small"><em>4 minutes ago</em>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-twitter fa-fw"></i> Log_2
+                            <span class="pull-right text-muted small"><em>12 minutes ago</em>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-envelope fa-fw"></i> Log_3
+                            <span class="pull-right text-muted small"><em>27 minutes ago</em>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-tasks fa-fw"></i> Log_4
+                            <span class="pull-right text-muted small"><em>43 minutes ago</em>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-upload fa-fw"></i> Log_5
+                            <span class="pull-right text-muted small"><em>11:32 AM</em>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-bolt fa-fw"></i> Log_6
+                            <span class="pull-right text-muted small"><em>11:13 AM</em>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-warning fa-fw"></i> Log_7
+                            <span class="pull-right text-muted small"><em>10:57 AM</em>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-shopping-cart fa-fw"></i> Log_8
+                            <span class="pull-right text-muted small"><em>9:49 AM</em>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <i class="fa fa-money fa-fw"></i> Log_9
+                            <span class="pull-right text-muted small"><em>Yesterday</em>
+                            </span>
+                        </a>
+                    </div>
+                    <!-- /.list-group -->
+                    <a href="#" class="btn btn-default btn-block">View All Alerts</a>
+                </div>
+                <!-- /.panel-body -->
+            </div>            
+        </div>
+        <!-- /.col-lg-4 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+</div>
+<!-- /#wrapper -->        
+{% load staticfiles%}    
+<script src="{% static 'ganglia/dist/js/index_data.js' %}"></script>
+<script src="{% static 'ganglia/js/morris-data.js' %}"></script>
+
+<script type="text/javascript">     
+
+//judge a host down if it didn't update for 2 minutes
+//num[0] for up host num[1] for down host
+function get_host_num(){            
+    var num = [];
+    num[0] = 0;
+    num[1] = 0;            
+    var base_url = "http://114.212.189.134:8005/ganglia/last_update/";
+    {% if host_list %}                
+    {% for host in host_list %}                                    
+    var req_url = base_url + '{{ host.host_name }}';
+    var update_interval = get_update_host(req_url);
+    if(update_interval < 120)
+        num[0] += 1;
+    else 
+        num[1] += 1;
+    {% endfor %}
+    {% else %}
+    num[0] = 0;
+    num[1] = 0;                
+    {% endif %}            
+    return num;            
+}                
+
+</script>
+
+{% endblock %}

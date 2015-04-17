@@ -1,0 +1,16 @@
+{% for metric in metric_list %}
+<div align="center" class="row">
+<div class="well well-sm col-md-9 col-md-offset-1">
+<h4 align="center" class="active">{{metric.mtc_name}} graph</h4>
+</div>
+</div>
+
+<div align="center" class="row">
+    <button onclick=xml_func("url") class="btn btn-primary">last hour</button> 
+    <button onclick=xml_func("url") class="btn btn-primary">last day</button> 
+    <button onclick=xml_func("url") class="btn btn-primary">last week</button> 
+    <button onclick=xml_func("url") class="btn btn-primary">last month</button> 
+</div>
+<div id=>
+<br/>
+{% endfor %}

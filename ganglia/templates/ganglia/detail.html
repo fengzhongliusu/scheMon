@@ -1,0 +1,519 @@
+{% extends "ganglia/base.html" %}
+
+{% block title %} 
+<div class="row" style="background-color:#2e2e2e;padding:15px;color:#a6a6a6">
+	<div class="col-xs-8 col-md-6 col-md-offset-3 col-xs-offset-2">
+		<h2 align=center>
+			Resource: {{ resource.res_name }}
+			<small>({{resource.res_hostname}})</small>
+		</h2>
+	</div>
+	<div class="col-md-1 col-md-offset-1" style="padding-top:20px">
+		<a href="{% url 'ganglia:index' %}" style="font-size:20px;color:#a6a6a0">Home</a>
+	</div>
+</div>
+<div id="test"></div>
+<br/>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-18 col-md-2 col-md-offset-1 col-xs-offset-1">
+      <br/>
+      <h4>Metric List</h4>
+      <ul class="nav nav-pills nav-stacked">
+        {% for metric in metric_list %}
+        <li role="presentation">
+         <a href="#" onclick="click_choose('{{metric.mtc_name}}')">{{metric.mtc_name}}</a>
+       </li>
+       {% endfor %}
+     </ul>			
+     <br/>
+     <label>
+      <input id="enableAlert" type="checkbox"></input>	
+      <span style="padding:3px;font-size:15px">Enable Alerting</span>
+    </label>
+    <br/><br/>  		
+    <div id="alert-content" style="display:none">				
+      <p>Alert on: 
+       <select id="selector"></select>
+     </p>		
+     <p>Threshold: <span id="unit"></span></p> 			
+     <p>upper bound:       
+       <input id="upper_bd" type="text" style="text-align: right; width:5em" /> 			
+     </p>			  			  			
+     <p>lower bound:
+       <input id="lower_bd" type="text" style="text-align: right; width:5em" /> 			
+     </p>				
+     <button type="button" id="check_button" class="btn btn-primary">
+      submitting
+    </button>    
+  </div>      
+  <div id="alert-content-setted" style="display:none">      
+    <p>Alert on: <span id="alert-name"></span></p>
+    <p>upper-bound: <span id="upper-setted"></span></p>
+    <p>lower-bound: <span id="lower-setted"></span></p>        
+  </div>
+</div>
+
+<div class="col-md-8 col-xs-18">
+ <div id="middle_container" align="center" class="row">
+  {% for metric in metric_list %}
+  {% if forloop.counter == 1 %}
+  <div id={{ metric.mtc_name }} style="display:block">
+   {% else %}
+   <div id={{ metric.mtc_name }} style="display:none">
+    {% endif %}
+    <div align="center" class="row">
+     <button onclick="button_plot('{{ metric.mtc_name}}/1/',this)" class="btn btn-primary">last hour</button> 
+     <button onclick="button_plot('{{ metric.mtc_name}}/2/',this)" class="btn btn-primary">last day</button> 
+     <button onclick="button_plot('{{ metric.mtc_name}}/3/',this)" class="btn btn-primary">last week</button> 
+     <button onclick="button_plot('{{ metric.mtc_name}}/4/',this)" class="btn btn-primary">last month</button> 
+   </div>
+   
+   <div id="graph_container" class="demo-container">
+     <div id="graph_holder1" class="demo-placeholder" style="display:block"></div>
+     <div id="graph_holder2" class="demo-placeholder" style="display:none"></div>
+     <div id="graph_holder3" class="demo-placeholder" style="display:none"></div>
+     <div id="graph_holder4" class="demo-placeholder" style="display:none"></div>
+   </div>
+ </div>
+ {% endfor %}
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="alert_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">  
+    <div class="modal-content">
+      <div class="modal-header">        
+        <h4 class="modal-title" align="center">Warning</h4>
+      </div>
+      <div class="modal-body">
+       <div class="alert alert-danger" role="alert">
+         <p><span id="warn-mtc"></span> have been exceeding the threshold in last 10 minutes</p>         
+       </div>      
+       {% if relate_list %}
+       <h4 align="center">Suggested metering list: </h4>
+       <ul style="padding-left:60px">
+        {% for res in relate_list %}
+        <li><a href="{% url 'ganglia:detail' res.id %}">{{res.res_name}}</a></li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <h5> Maybe this is the cause of the problem... </h5>
+      {% endif %}     
+    </div>     
+  </div>
+</div>
+</div>
+
+
+
+<script type="text/javascript">
+
+var plot_list = {}; //global plot obj intend for realize realtime update
+var update_index;
+var update_name;
+var init_alert = 1;
+
+{% for g_mtc in metric_list %}
+var plot_1,plot_2,plot_3,plot_4;
+plot_list['{{ g_mtc.mtc_name}}'] = [plot_1,plot_2,plot_3,plot_4];
+{% if forloop.counter == 1 %}
+update_name = '{{ g_mtc.mtc_name }}';
+update_index = 0;
+{% endif %}
+{% endfor %}
+
+
+$('#check_button').on('click', function () {    
+  if(document.getElementById('upper_bd').value.length == 0 
+    || document.getElementById('lower_bd').value.length == 0){
+    alert("please input!!");
+}  
+else{    
+  var s = document.getElementById("selector");    
+  var alert_name = s.options[s.selectedIndex].text;
+  $("#alert-content").hide();
+  $("#alert-name").html(alert_name+" "+get_unit('{{ resource.res_name }}'));
+  $("#upper-setted").html($("#upper_bd").val());
+  $("#lower-setted").html($("#lower_bd").val());
+  $("#alert-content-setted").fadeIn();        
+  if(init_alert == 1){        
+    setInterval(alert_func,3000);    
+    init_alert = 0;
+  }
+}
+});
+
+//write unit of the threshold according to res name of the page
+$("#unit").html(get_unit('{{ resource.res_name }}'));
+
+
+//click checkbox to control the display of alert-content
+$('#enableAlert').on('change', function() {     
+  if (this.checked) {
+    $('#alert-content').fadeIn();
+  }
+  else{
+   $('#alert-content').fadeOut();
+   $('#alert-content-setted').fadeOut();
+ }
+});
+
+
+//init the pulldown content
+$(function(){
+	var sel = document.getElementById("selector");
+	var all_elem = document.createElement("option");
+	all_elem.innerHTML = "all_together";
+	sel.appendChild(all_elem);
+	{% for pulldown_mtc in metric_list %}
+	var e = document.createElement("option");
+	e.innerHTML = '{{ pulldown_mtc.mtc_name }}';
+	sel.appendChild(e);
+	{% endfor %}
+});
+
+//init plotting when first load the page
+$(function(){
+	var elem;
+	var init_url;
+	{% for metric in metric_list %}
+	{% if forloop.counter == 1 %}
+	elem = document.getElementById('{{ metric.mtc_name}}');
+	init_url = "http://114.212.189.132:8000/ganglia/xml/" + '{{ resource.res_hostname}}/{{ metric.mtc_name}}/1/';
+	{% endif%}
+	{% endfor%}
+	gra_elem = elem.querySelector("#graph_container").querySelector("#graph_holder1");
+	plot_g(init_url,gra_elem,'1');
+});
+
+
+setInterval(update_plot,10000);
+
+//check alerting every 3 minutes
+// setInterval(check_alert,2000);  
+
+function click_choose(text){
+	{% for metric in metric_list %}      
+	if('{{ metric.mtc_name }}' == text){
+		document.getElementById('{{ metric.mtc_name }}').style.display='block';
+		item_plot(text);
+	}
+	else
+		document.getElementById('{{ metric.mtc_name }}').style.display='none';
+	{% endfor %}
+}
+
+/**
+  funtion for plotting
+  */
+  function plot_g(url,obj,type){
+  	var time_fmt;
+  	var op;
+  	var update_interval = 30000;
+  	var plot_index;
+  	var mtc_name = obj.parentNode.parentNode.id;
+	var gra_title;
+
+  	if(type == '1'){
+  		time_fmt = "%H:%M";
+  		plot_index = 0;
+		gra_title = "last hour";
+  		op = {
+  			hour: "2-digit", minute: "2-digit", second: "2-digit"
+  		};
+  	}
+  	else if(type == '2'){
+  		time_fmt = "%y/%m/%d %H:%M";
+  		plot_index = 1;
+		gra_title = "last day";
+  		op = {
+  			month: "short",day: "numeric", hour: "2-digit", minute: "2-digit"
+  		};
+  	}
+  	else if(type == '3'){
+  		time_fmt = "%y/%m/%d";
+  		plot_index = 2;
+		gra_title = "last week";
+  		op = {
+  			month: "short",day: "numeric"
+  		};
+  	}
+  	else{
+  		time_fmt = "%y/%m/%d";
+  		plot_index = 3;
+		gra_title = "last month";
+  		op = {
+  			month: "short",day: "numeric"
+  		};
+  	}
+
+  	var value_ary = get_xml(url);
+	var avg = get_avg(value_ary);
+  	if(value_ary.length > 0){
+  		plot_list[mtc_name][plot_index]= $.plot(obj,
+  			[{data:value_ary,label: obj.parentNode.parentNode.id + get_unit('{{ resource.res_name }}')}],					
+  			{
+  				xaxis: {
+  					mode: "time",
+  					timezone: "browser",
+  					timeformat: time_fmt
+  				},
+				//this for title 
+				xaxes:[
+				  {
+				      position:'bottom' // presumably this is where your xaxis lived before
+				  },
+				  {
+					  show:true,
+					  position:'top',
+				      ticks:
+					  function(axis){
+					  return[[(axis.min+axis.max)/2,
+					  obj.parentNode.parentNode.id+" "+gra_title]]; 
+					  }
+				  },
+				],
+  				series: {
+  					lines: {
+  						show: true,
+              fill: true
+  					},            
+  					points: {
+  						show: false
+  					}  					
+  				},
+  				grid: {
+  					hoverable: true,
+  					clickable: true 
+  				},
+  				legend:{
+  					position:"nw"
+  				}
+  			});
+
+  		$("<div id='tooltip'></div>").css({
+  			position: "absolute",
+  			display: "none",
+  			border: "1px solid #faa",
+  			"border-radius": "5px",
+  			padding: "3px",
+  			"background-color": "#fee",
+  			opacity: 0.90
+  		}).appendTo("body");
+
+  		$(obj).bind("plothover", function (event, pos, item) {
+  			if (item) {
+  				var x = item.datapoint[0]/1000 + 8*3600,
+  				y = item.datapoint[1].toFixed(2);
+  				var t = new Date(1970,0,1);
+  				t.setSeconds(x);
+  				$("#tooltip").html(t.toLocaleDateString("en-US",op)+"<br/>"+"value: "+y).
+  				css({top: item.pageY+5, left: item.pageX+5}).
+  				fadeIn(150);
+  			} else {
+  				$("#tooltip").hide();
+  			}
+  		});
+
+  	}
+  	else{
+  		obj.innerHTML = "failed to get msg!!";
+  	}
+  }
+
+
+
+/**
+  get unit
+  **/
+  function get_unit(axes_name){
+  	var unit = "";
+  	if(axes_name == "Mem")
+  		unit = "(KB)";
+  	else if(axes_name == "Disk")
+  		unit = "(GB)";
+  	else if(axes_name == "Cpu")
+  		unit = "(%)";
+  	else if(axes_name == "Network")
+  		unit = "(packet/s)";
+  	return unit;
+  }
+
+/**
+  function to update in specific time interval
+  **/
+  function update_plot(){
+  	var base_url  = "http://114.212.189.132:8000/ganglia/xml/" + '{{ resource.res_hostname}}/'+update_name +'/';
+  	var url_list = [];
+  	url_list.push(base_url + '1/');
+  	url_list.push(base_url + '2/');
+  	url_list.push(base_url + '3/');
+  	url_list.push(base_url + '4/');	
+  	var plot_upd = plot_list[update_name][update_index];
+  	plot_upd.setData([{data:get_xml(url_list[update_index]),label:update_name+get_unit('{{ resource.res_name}}')}]);
+  	plot_upd.setupGrid();
+  	plot_upd.draw();	
+  }
+
+
+
+/**
+  function for getting xml data from rrd
+  **/
+  function get_xml(req_url){
+  	var v_array = [];
+  	var xml_http = new XMLHttpRequest();
+	  xml_http.open("GET",req_url,false);
+	  xml_http.send();
+    xmlDoc = jQuery.parseXML(xml_http.responseText);
+    $(xmlDoc).find('row').each(function(){
+            var time = parseFloat($(this).children('t').text());
+            var value = parseFloat($(this).children('v').text());
+            v_array.push([time*1000,value]);      //time series xaxis require x to be millis
+            });
+    return v_array;
+  }
+
+/**
+  plot according to the button clicked
+ */
+function button_plot(url,obj){
+    var base_url;
+    var child_node;
+    var graph_obj;
+    var time_type;
+    time_type = url.charAt(url.length-2);
+    switch (time_type){
+        case '1': 
+            update_index = 0;
+            break;
+        case '2':
+            update_index = 1;
+            break;
+        case '3':
+            update_index = 2;
+            break;
+        case '4':
+            update_index = 3;
+            break;
+        default:
+            alert("error index");
+            break;
+    }
+
+    base_url = "http://114.212.189.132:8000/ganglia/xml/" + '{{ resource.res_hostname}}/' + url;
+    //get child by id 
+    graph_id = "#graph_holder"+time_type;
+    graph_obj = obj.parentNode.parentNode.querySelector("#graph_container").querySelector(graph_id);
+    child_node = graph_obj.parentNode.children;
+    for(var i=0;i<child_node.length;i++)
+        child_node[i].style.display = 'none';
+    graph_obj.style.display = 'block';
+    plot_g(base_url,graph_obj,time_type);
+}
+
+/**
+  plot according list item clicked 
+ **/
+function item_plot(m_name){
+    var elem_plot;
+    var url_item = [];
+    update_name = m_name;
+    update_index = 0;
+
+    url_item = "http://114.212.189.132:8000/ganglia/xml/" + '{{ resource.res_hostname}}/' + m_name + "/1/";
+    elem_plot= document.getElementById(m_name).querySelector("#graph_container").querySelector("#graph_holder1");
+    plot_g(url_item,elem_plot,'1');
+}
+
+
+/**
+  function to check whether the specified metric exceed the threshold 
+ **/
+function alert_func(){    
+    var base_url = "http://114.212.189.132:8000/ganglia/xml/" + '{{ resource.res_hostname}}/';
+    var s = document.getElementById("selector");    
+    var alert_mtc = s.options[s.selectedIndex].text;
+    var upper_bound = $("#upper_bd").val();
+    var lower_bound = $("#lower_bd").val();    
+    var m_value = [];
+    var alert_sign = 1;
+    var all_NaN = 1;  
+
+    //checkbox is not checked, return directly
+    if(!$('#enableAlert').is(':checked'))
+        return;  
+
+    if(alert_mtc == "all_together"){   //all metric of the resource together              
+        var all_mtc_array = [];      
+        {% for m in metric_list %}        //get all metric xml data in last 10 minutes
+        var m_url = base_url + '{{ m.mtc_name }}/5/';
+        var m_data = get_xml(m_url);
+        all_mtc_array.push(m_data);
+        {% endfor %}      
+
+        for(var i=0;i<all_mtc_array[0].length;i++){
+            m_value.push(all_mtc_array[0][i][1]);
+        }
+        for(var i=1;i<all_mtc_array.length;i++){
+            for(var j=0;j<m_value.length;j++){          
+                m_value[j] += all_mtc_array[i][j][1];
+            }            
+        }
+    }
+    else{           //only one metric of the resource in the page
+        var alert_url = base_url + alert_mtc + "/5/";
+        var xml_data = get_xml(alert_url);            
+        for (var i=0;i<xml_data.length;i++){
+            m_value.push(xml_data[i][1])      
+        }      
+    }
+
+    //judge whether all value is within the threshold
+    for(var i=0;i<m_value.length;i++){      
+        if(!isNaN(m_value[i])){
+            all_NaN = 0;
+            if(m_value[i]<upper_bound && m_value[i]>lower_bound){
+                alert_sign = 0;
+            }      
+        }      
+    }
+
+    if(all_NaN ==1 )
+        alert("all Num is NaN!!");    
+    else if(alert_sign ==1){
+        $("#warn-mtc").html(alert_mtc);
+        $("#alert_modal").modal("show");      
+    }            
+}//end of func
+
+function get_avg(v_arr){
+    var r_array = [];
+    var count,max,min,sum;
+    max = v_arr[0];
+    min = v_arr[0];
+    sum = 0;
+    for(var i=0;i<v_arr.length;i++){
+        sum += v_arr[i];
+        if(min > v_arr[i])
+            min = v_arr[i];
+        if(max < v_arr[i])
+            max = v_arr[i];			
+    }
+    sum = sum / v_arr.length;
+    r_array.push[max];
+    r_array.push[min];
+    r_array.push[sum];
+    r_array = [1,2,3]
+        return r_array;
+}
+
+</script>
+
+{% endblock %}

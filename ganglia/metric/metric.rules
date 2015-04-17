@@ -1,0 +1,7 @@
+@prefix nsProp: <http://test/property#>.
+
+[deduceRule: (?A nsProp:subClassOf ?B) -> (?B nsProp:relateTo ?A)]
+[deduceRule: (?A nsProp:affectBy ?B) -> (?A nsProp:relateTo ?B)]
+[transitiveRule: (?A nsProp:subClassOf ?B), (?B nsProp:subClassOf ?C) -> (?A nsProp:subClassOf ?C)]
+[transitiveRule: (?A nsProp:relateTo ?B), (?B nsProp:relateTo ?C) -> (?A nsProp:relateTo ?C)]
+[transitiveRule: (?A nsProp:affectBy ?B), (?B nsProp:affectBy ?C) -> (?A nsProp:affectBy ?C)]

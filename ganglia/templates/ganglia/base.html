@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    {% load staticfiles%}    
+    <!-- MetisMenu CSS -->
+    <link href="{% static 'ganglia/plugin/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'ganglia/plugin/metisMenu/dist/metisMenu.min.css' %}" rel="stylesheet">
+    <!-- Timeline CSS -->
+    <link href="{% static 'ganglia/dist/css/timeline.css' %}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'ganglia/dist/css/sb-admin-2.css' %}" rel="stylesheet" type="text/css">
+    <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />   
+    <!-- <link href="{% static 'ganglia/dist/css/ionicons.min.css' %}" rel="stylesheet" type="text/css"> 
+    <link href="{% static 'ganglia/dist/css/ionicons.css' %}" rel="stylesheet" type="text/css">  -->
+    <link href="{% static 'ganglia/dist/css/AdminLTE.min.css' %}" rel="stylesheet" type="text/css">       
+    <!-- Morris Charts CSS -->    
+    <link href="{% static 'ganglia/plugin/morrisjs/morris.css' %}" rel="stylesheet">
+    <!-- Custom Fonts -->    
+    <link href="{% static 'ganglia/plugin/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">   
+
+
+    <!-- <link href="{% static 'ganglia/css/bootstrap.min.css' %}"  rel="stylesheet" type="text/css"/> -->
+    <link href="{% static 'ganglia/css/examples.css' %}" rel="stylesheet" type="text/css"/>
+    <script src="{% static 'ganglia/js/jquery.min.js' %}"></script>
+    <script src="{% static 'ganglia/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'ganglia/js/jquery.flot.min.js' %}"></script>
+    <script src="{% static 'ganglia/js/jquery.flot.autoMarkings.js' %}"></script>
+    <script src="{% static 'ganglia/js/jquery.flot.time.js' %}"></script>
+    <script src="{% static 'ganglia/js/jquery.flot.pie.js' %}"></script>
+    <script src="{% static 'ganglia/js/jquery.flot.stack.js' %}"></script>
+    <script src="{% static 'ganglia/js/raphael-min.js' %}"></script>
+    <script src="{% static 'ganglia/js/morris.min.js' %}"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->    
+    <script src="{% static 'ganglia/plugin/metisMenu/dist/metisMenu.min.js' %}"></script>
+    <!-- Morris Charts JavaScript -->
+    <script src="{% static 'ganglia/plugin/raphael/raphael-min.js' %}"></script>
+    <script src="{% static 'ganglia/plugin/morrisjs/morris.min.js' %}"></script>    
+    <!-- Custom Theme JavaScript -->
+    <script src="{% static 'ganglia/dist/js/sb-admin-2.js' %}"></script>
+</head>
+
+<body>
+    {% block title %}{% endblock %}
+    {% block content %}{% endblock %}
+<div class="footer navbar-fixed-bottom" align=center>
+	Ontology-Monitoring--Copyright cshuo; 2015-3-1
+</div>
+</body>
+</html>
+

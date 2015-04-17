@@ -1,0 +1,29 @@
+@prefix : <file:///code/ganglia/metric.n3#>.
+@keywords is, of, a.
+
+Cpu subClassOf hardware .
+Mem subClassOf hardware .
+Network subClassOf hardware .
+Disk subClassOf hardware .
+Load subClassOf hardware .
+Cpu hasMetric cpu_system .
+Cpu hasMetric cpu_user .
+Cpu hasMetric cpu_nice .
+Cpu hasMetric cpu_idle .
+Network hasMetric pkts_in .
+Network hasMetric pkts_out .
+Mem hasMetric mem_free .
+Mem hasMetric mem_shared . 
+Mem hasMetric mem_total . 
+Mem hasMetric mem_cached . 
+Disk hasMetric disk_free .
+Disk hasMetric disk_total .
+Load hasMetric load_one .
+Load hasMetric load_five .
+Load hasMetric load_fifteen .
+Load affect Disk.
+Disk affect Cpu.
+Load affect Cpu.
+Network affect Load.
+Load affect Mem.
+Network affect Disk.

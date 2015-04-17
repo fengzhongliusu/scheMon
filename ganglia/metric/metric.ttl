@@ -1,0 +1,37 @@
+@prefix nsProp: <http://test/property#>.
+@prefix nsMetric: <http://test/metric#>.
+@prefix nsResource: <http://test/resource#>.
+
+
+nsResource:hardware nsProp:subClassOf nsResource:Resource .
+nsResource:software nsProp:subClassOf nsResource:Resource .
+nsResource:Cpu nsProp:subClassOf nsResource:hardware .
+nsResource:Mem nsProp:subClassOf nsResource:hardware .
+nsResource:Network nsProp:subClassOf nsResource:hardware .
+nsResource:Disk nsProp:subClassOf nsResource:hardware .
+nsResource:Load nsProp:subClassOf nsResource:hardware .
+nsResource:Jvm nsProp:subClassOf nsResource:software .
+nsResource:Cpu nsProp:hasMetric nsMetric:cpu_system .
+nsResource:Cpu nsProp:hasMetric nsMetric:cpu_user .
+nsResource:Cpu nsProp:hasMetric nsMetric:cpu_nice .
+nsResource:Cpu nsProp:hasMetric nsMetric:cpu_idle .
+nsResource:Network nsProp:hasMetric nsMetric:pkts_in .
+nsResource:Network nsProp:hasMetric nsMetric:pkts_out .
+nsResource:Mem nsProp:hasMetric nsMetric:mem_free .
+nsResource:Mem nsProp:hasMetric nsMetric:mem_shared . 
+nsResource:Mem nsProp:hasMetric nsMetric:mem_total . 
+nsResource:Mem nsProp:hasMetric nsMetric:mem_cached . 
+nsResource:Disk nsProp:hasMetric nsMetric:disk_free .
+nsResource:Disk nsProp:hasMetric nsMetric:disk_total .
+nsResource:Load nsProp:hasMetric nsMetric:load_one .
+nsResource:Load nsProp:hasMetric nsMetric:load_five .
+nsResource:Load nsProp:hasMetric nsMetric:load_fifteen .
+nsResource:Jvm nsProp:hasMetric nsMetric:thrNumMetric .
+nsResource:Cpu nsProp:affectBy nsResource:Jvm .
+nsResource:Mem nsProp:affectBy nsResource:Jvm .
+nsResource:Mem nsProp:affectBy nsResource:Load .
+nsResource:Disk nsProp:affectBy nsResource:Network .
+nsResource:Cpu nsProp:affectBy nsResource:Disk .
+nsResource:Disk nsProp:affectBy nsResource:Load .
+nsResource:Cpu nsProp:affectBy nsResource:Load .
+nsResource:Load nsProp:affectBy nsResource:Network .

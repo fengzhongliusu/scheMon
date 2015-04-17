@@ -1,0 +1,107 @@
+{% extends "ganglia/base.html" %}
+{% block title%}
+<div class="row" style="background-color:#2e2e2e;padding:15px;color:#a6a6a6">
+	<div class="col-xs-8 col-md-6 col-md-offset-3 col-xs-offset-2">
+		<div> 
+			<h1 align=center>
+				Cluster Monitor
+			</h1>
+		</div>
+	</div>
+	<div class="col-xs-2 col-md-1 col-md-offset-1" style="padding-top:20px">
+		<a href="#" style="font-size:20px;color:#a6a6a0">About</a>
+	</div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% load staticfiles %}
+<div class="container-fluid"> 
+	<div class="row">
+		<div id="blank" class="col-md-4">            
+            <div class="sm-container">
+            	<div class="demo-placeholder" id="graph-holder"></div>
+            </div>            
+        </div>        
+
+		<div id="host_div" class="col-md-4">
+			<h3 align=center>Hosts in cluster</h3>
+			{% if host_list and resource_list %}
+				<div class="row">
+					{% for host in host_list %}
+						<div class="col-xs-4 col-md-4" align=center>
+							<a onclick="show_res(this,'{{ host.host_name }}')">
+								<img src="{% static 'ganglia/images/pc.png' %}" height="60" width="60"></img>
+								<p>{{ host.host_name}}</p>
+							</a>
+						</div>
+					{% endfor%}
+				</div>
+			{% else %}
+				<h3 align=center>No Host</h3>
+			{% endif %}
+		</div>
+		<div id="res_div" class="col-xs-8 col-md-3 col-md-offset-1 col-xs-offset-2" style="display:none">
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+$(function() {
+	var down_num=1,up_num=8;
+	Morris.Donut({
+        element: 'graph-holder',
+        data: [{
+            label: "Hosts Up",
+            value: up_num
+        }, {
+            label: "Hosts Down",
+            value: down_num
+        }],
+        resize: true
+    });
+});
+
+function get_update(req_url){
+    var update_time;
+    var xml_http = new XMLHttpRequest();
+    xml_http.open("GET",req_url,false);
+    xml_http.send();
+    update_time = parseInt(xml_http.responseText);
+    return update_time;
+}
+
+/**
+ function for showing the resources in the host clicked
+ **/
+function show_res(obj,h_name){
+	var added_div = document.getElementById("res_div");
+	var p_title = document.createElement('h3');
+	var br = document.createElement('br');
+	var hosts_div = document.getElementById("host_div");
+	host_div.setAttribute('class',"col-md-4 col-md-offset-2");
+	$("#res_div").empty();
+	p_title.innerHTML = "Resources in "+ h_name;
+	p_title.setAttribute('align',"center");
+	added_div.appendChild(p_title);
+	added_div.appendChild(br);
+	{% for resource in resource_list %}
+		if(h_name == '{{ resource.res_hostname }}'){
+			var res_div = document.createElement("div");
+			var res_a = document.createElement("a");
+			res_div.setAttribute('class',"alert alert-success");
+			res_div.setAttribute('align',"center");
+			res_a.setAttribute('href',"{% url 'ganglia:detail' resource.id %}");
+			res_a.innerHTML="{{ resource.res_name }}";
+			res_div.appendChild(res_a);
+			added_div.appendChild(res_div);
+		}
+	{% endfor %}
+	$("#blank").hide();
+	$("#res_div").fadeIn();
+}
+
+</script>
+{% endblock %}
+

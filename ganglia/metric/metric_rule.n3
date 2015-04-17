@@ -1,0 +1,7 @@
+@prefix : <file:///code/ganglia/metric.n3#>.
+@keywords is, of, a.
+
+{ ?A affect ?B } => { ?B relateTo ?A }.
+
+{ ?A relateTo ?B. ?B relateTo ?C } => { ?A relateTo ?C }.
+#ends
