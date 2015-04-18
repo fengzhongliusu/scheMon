@@ -82,6 +82,30 @@
     top: 5px;
 }	
 
+.red_square {
+	height:45px;
+	background:#FF3300;
+	border-radius:4px;
+}
+
+.green_square {
+	height:45px;
+	background:#33FF66;
+	border-radius:4px;
+}
+
+.blue_square {
+	height:45px;
+	background:#3300FF;
+	border-radius:4px;
+}
+
+.purple_square {
+	height:45px;
+	background:#CC0099;
+	border-radius:4px;
+}
+
 footer {
 	position: absolute;
 	bottom: 0;

@@ -113,7 +113,7 @@
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Overview
+                            Overview                            
                         </div>
                         <!-- /.panel-heading -->                        
                         <div class="panel-body" style="height: 545px;">
@@ -130,7 +130,25 @@
                                 <div class="tab-pane fade in active" id="home">
                                     <br />
                                     <div class="box box-default">                                        
-                                      <!-- form start -->                                            
+                                      <!-- form start -->      
+                                      <div class="box-header">                                      
+                                            <div class="pull-right">
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                                        Metrics
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu pull-right" role="menu">       
+                                                        <li><a href="#" onclick="show_metric('mem')">Mem</a>
+                                                        </li>
+                                                        <li><a href="#" onclick="show_metric('network')">network</a>
+                                                        </li>
+                                                        <li><a href="#" onclick="show_metric('load')">Load</a>
+                                                        </li>                                                                
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                      </div>
                                       <div class="box-body">                              
                                           <div id="metric-graph">                    
                                             <div class="lg-container">
@@ -142,19 +160,25 @@
                                 
                             </div>
                             <div class="tab-pane fade" id="profile">                     
-                                <div class="row">           
-                                    <div class="col-lg-3 col-sm-offset-1">
+                                <div class="row">                                               
+                                    <div class="col-lg-12"> 
+                                        <div class="col-lg-2">
                                         <div class="color-box" style="background-color: #FF3300;"></div>
-                                        <p style="padding-left: 5px;">type1</p>
+                                        <p style="padding-left: 5px;">MATLAB</p>                                        
                                     </div>
-                                    <div class="col-lg-3 col-sm-offset-1">
+                                    <div class="col-lg-3">
                                         <div class="color-box" style="background-color: #33FF66"></div>
-                                        <p style="padding-left: 5px;">type2</p>
+                                        <p style="padding-left: 5px;">MATLAB_MASTER</p>
                                     </div>
-                                    <div class="col-lg-3 col-sm-offset-1">
+                                    <div class="col-lg-2  col-sm-offset-1">
                                         <div class="color-box" style="background-color: #3300FF;"></div>
-                                        <p style="padding-left: 5px;">type3</p>
+                                        <p style="padding-left: 5px;">GAME</p>
                                     </div>                                    
+                                    <div class="col-lg-2  col-sm-offset-1">
+                                        <div class="color-box" style="background-color: #CC0099;"></div>
+                                        <p style="padding-left: 5px;">HADOOP</p>
+                                    </div>                                    
+                                    </div>                                                                        
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-6">
@@ -165,22 +189,8 @@
                                                 </div>                                                
                                             </div>
                                             <!-- /.panel-heading -->
-                                            <div class="box-body" style="height:185px;" id="host1">
-                                                <div class="row">                                                    
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#FF3300;border-radius:4px;">
-                                                            <div style="padding-top: 5px;" class="fa fa-desktop"></div>
-                                                        </div> 
-                                                        <p>test1</p>
-                                                    </div>
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#33FF66;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#3300FF;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
+                                            <div class="box-body" style="height:185px;overflow-y: scroll">
+                                                <div class="row" id="host_1">                                                                             
                                                 </div>                            
                                             </div>
                                             <!-- /.panel-body -->
@@ -194,25 +204,14 @@
                                                 </div>                                                
                                             </div>
                                             <!-- /.panel-heading -->
-                                            <div class="box-body" style="height:185px;" id="host2">
-                                                <div class="row">                                                    
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#FF3300;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#33FF66;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#3300FF;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
+                                            <div class="box-body" style="height:185px;overflow-y: scroll">
+                                                <div class="row" id="host_2">                        
                                                 </div>                            
                                             </div>
                                             <!-- /.panel-body -->
                                         </div>                                                                        
-                                    </div>                                                                              
+                                    </div>            
+
                                     <div class="col-lg-6">
                                         <div class="box">
                                             <div align=center class="box-header">
@@ -221,26 +220,14 @@
                                                 </div>                                                
                                             </div>
                                             <!-- /.panel-heading -->
-                                            <div class="box-body" style="height:185px;" id="host3">
-                                                <div class="row">                                                    
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#FF3300;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#33FF66;border-radius:4px;">
-                                                        </div> 
-                                                        <p>test1</p>
-                                                    </div>
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#3300FF;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
+                                            <div class="box-body" style="height:185px; overflow-y: scroll">
+                                                <div class="row" id="host_3">                 
                                                 </div>                            
                                             </div>
                                             <!-- /.panel-body -->
-                                        </div>                                                                        
-                                    </div>                
+                                        </div>         
+                                    </div>             
+
                                     <div class="col-lg-6">
                                         <div class="box">
                                             <div align=center class="box-header">
@@ -249,20 +236,8 @@
                                                 </div>                                                
                                             </div>
                                             <!-- /.panel-heading -->
-                                            <div class="box-body" style="height:185px;" id="host4">
-                                                <div class="row">                                                    
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#FF3300;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#33FF66;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
-                                                    <div class="col-lg-4" align=center>
-                                                        <div style="height:45px;background:#3300FF;border-radius:4px;"></div> 
-                                                        <p>test1</p>
-                                                    </div>
+                                            <div class="box-body" style="height:185px;overflow-y: scroll">
+                                                <div class="row" id="host_4">                                     
                                                 </div>                            
                                             </div>
                                             <!-- /.panel-body -->
@@ -323,37 +298,7 @@
 <script src="{% static 'ganglia/dist/js/sche.js' %}"></script>
 
 <script type="text/javascript">    
-    var ws;
-    var recv_data;
-    ws = new WebSocket("ws://172.28.39.179:9008/soc");
-    ws.onmessage = function(e) {        
-        recv_data = JSON.parse(e.data);        
-        add_list(recv_data);
-    };    
-
-function add_list(data){
-    var log_item = document.getElementById("log_item");
-    var div = document.createElement('div');    
-    var span = document.createElement('span');
-    div.setAttribute('class',"list-group-item");
-    span.innerHTML = data.type + ": " + data.value;
-    div.appendChild(span);
-
-    log_item.appendChild(div);
-}
-
-function onFileSelected(event) {
-	var selectedFile = event.target.files[0];
-	var reader = new FileReader();
-
-	var result = document.getElementById("text");
-
-	reader.onload = function(event) {
-		result.innerHTML = event.target.result;
-	};
-
-	reader.readAsText(selectedFile);
-}
+    
 </script>
 
 {% endblock %}
